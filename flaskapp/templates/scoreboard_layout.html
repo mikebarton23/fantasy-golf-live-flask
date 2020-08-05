@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='test.css') }}">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='fgl.css') }}">
+
+  <title>Fantasy Golf Live - Scoreboard</title>
+
+  <!-- <div class="top" style="background-color: #FB5B5B">
+    <h1 class="w3-text-white">FGL Scoreboard</h1>
+      <a href="https://twitter.com/FGL_Tracker" class ="fgl-twitter-header fa fa-twitter w3-xlarge" style="text-decoration:none;"></a>
+  </div> -->
+  <div class="left">
+    <nav class="fgl-sidebar w3-bar-block w3-small w3-hide-small w3-center fgl-icon">
+      <a href="{{ url_for('main.view') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+        <i class="fa fa-home w3-xxlarge"></i>
+        <p>Home</p>
+      </a>
+      <a href="{{ url_for('players.myteam') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+        <i class="fa fa-users w3-xxlarge"></i>
+        <p>My Team</p>
+      </a>
+      <a href="{{ url_for('players.game_scoreboard') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+        <i class="fa fa-list-ol w3-xxlarge"></i>
+        <p>Scoreboard</p>
+      </a>
+      <a href="{{ url_for('main.home') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+        <i class="fa fa-comments w3-xxlarge"></i>
+        <p>Smack Board</p>
+      </a>
+      <a href="{{ url_for('players.draft') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+        <i class="fa fa-plus-square-o w3-xxlarge"></i>
+        <p>Draft</p>
+      </a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('users.account') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+          <i class="fa fa-cog w3-xxlarge"></i>
+          <p>My Account</p>
+        </a>
+        <a href="{{ url_for('users.logout') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+          <i class="fa fa-sign-out w3-xxlarge"></i>
+          <p>Logout</p>
+        </a>
+      {% else %}
+        <a href="{{ url_for('users.register') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+          <i class="fa fa-user-plus w3-xxlarge"></i>
+          <p>Register</p>
+        </a>
+      {% endif %}
+    </nav>
+    <div class="w3-top w3-hide-large w3-hide-medium" id="myNavbar">
+      <div class="w3-bar w3-black w3-opacity w3-hover-opacity-off w3-center w3-small w3-hover-red">
+        <a href="{{ url_for('main.home') }}" class="w3-bar-item w3-button" style="width:25% !important">Home</a>
+        <a href="{{ url_for('players.myteam') }}" class="w3-bar-item w3-button" style="width:25% !important">My Team</a>
+        <a href="{{ url_for('players.game_scoreboard') }}" class="w3-bar-item w3-button" style="width:25% !important">Scoreboard</a>
+        <a href="{{ url_for('users.account') }}" class="w3-bar-item w3-button" style="width:25% !important">My Account</a>
+        <a href="{{ url_for('users.logout') }}" class="w3-bar-item w3-button" style="width:25% !important">Logout</a>
+      </div>
+    </div>
+  </div>
+  <body>
+    <div class="main w3-padding-small" id="mainDiv">
+      <main role="main" class="container">
+        <div class="row">
+          <div class="fgl-scoreboard" id="score">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }}">
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+            <h3 class="w3-text-red" style="margin-top:20px; margin-bottom:20px; text-align:center;">FGL Scoreboard</h3>
+              <table id = "data_table" class="table-striped table-bordered table-dark table-hover table-sm table-responsive fgl-scoreboard" style="text-align:center; margin:auto; width:auto;">
+                <thead class="thead-dark fgl-scoreboard">
+                  <tr>
+                    <th scope="col">Team</th>
+                    <th scope="col">To Par</th>
+                    <th scope="col">To Par Int</th>
+                    <th scope="col">Today</th>
+                    <th scope="col">Today Int</th>
+                    <th scope="col">Holes Remaining</th>
+                    <th scope="col">Cut Players</th>
+                    <th scope="col">4th Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for i,row in scoreboard_df.iterrows() %}
+                  <tr>
+                    <td style="text-align:center">{{ row['Username'] }}</td>
+                    <td style="text-align:center">{{ row['Current Score'] }}</td>
+                    <td style="text-align:center">{{ row['Current Score Int'] }}</td>
+                    <td style="text-align:center">{{ row['Today'] }}</td>
+                    <td style="text-align:center">{{ row['Today Int'] }}</td>
+                    <td style="text-align:center">{{ row['Holes Remaining'] }}</td>
+                    <td style="text-align:center">{{ row['Cut Players'] }}</td>
+                    <td style="text-align:left">{{ row['4th Score'] }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+                <br>
+                <br>
+              <h3 class="w3-text-red" style="margin-top:20px; margin-bottom:20px; text-align:center;">Drafted Players</h3>
+
+              <table id="drafted" class="table-striped table-bordered table-dark table-hover table-sm table-responsive fgl-scoreboard" style="text-align:center; width:auto;">
+                <thead class="thead-dark fgl-scoreboard">
+                  <tr>
+                    <th scope="col">POS</th>
+                    <th scope="col">Player</th>
+                    <th scope="col">Team</th>
+                    <th scope="col">To Par</th>
+                    <th scope="col">To Par Int</th>
+                    <th scope="col">Today</th>
+                    <th scope="col">Today Int</th>
+                    <th scope="col">Thru</th>
+                    <th scope="col">R1</th>
+                    <th scope="col">R2</th>
+                    <th scope="col">R3</th>
+                    <th scope="col">R4</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for i,row in drafted_df.iterrows() %}
+                  <tr>
+                    <td style="text-align:center">{{ row['POS'] }}</td>
+                    <td style="text-align:left">{{ row['Player'] }}</td>
+                    <td style="text-align:center">{{ row['Username'] }}</td>
+                    <td style="text-align:center">{{ row['To Par'] }}</td>
+                    <td style="text-align:center">{{ row['To Par Int'] }}</td>
+                    <td style="text-align:center">{{ row['Today'] }}</td>
+                    <td style="text-align:center">{{ row['Today Int'] }}</td>
+                    <td style="text-align:center">{{ row['Thru'] }}</td>
+                    <td style="text-align:center">{{ row['R1'] }}</td>
+                    <td style="text-align:center">{{ row['R2'] }}</td>
+                    <td style="text-align:center">{{ row['R3'] }}</td>
+                    <td style="text-align:center">{{ row['R4'] }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <h3 class="w3-text-red" style="margin-top:20px; margin-bottom:20px; text-align:center;">Full Tournament Leaderboard</h3>
+              <table id="scoreboard" class="table-striped table-bordered table-dark table-hover table-sm table-responsive display fgl-scoreboard" style="text-align:center; width:auto;">
+                <thead class="thead-dark fgl-scoreboard">
+                  <tr>
+                    <th scope="col">POS</th>
+                    <th scope="col">Player</th>
+                    <th scope="col">To Par</th>
+                    <th scope="col">To Par Int</th>
+                    <th scope="col">Today</th>
+                    <th scope="col">Today Int</th>
+                    <th scope="col">Thru</th>
+                    <th scope="col">R1</th>
+                    <th scope="col">R2</th>
+                    <th scope="col">R3</th>
+                    <th scope="col">R4</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for i,row in df.iterrows() %}
+                  <tr>
+                    <td style="text-align:center">{{ row['POS'] }}</td>
+                    <td style="text-align:center">{{ row['Player'] }}</td>
+                    <td style="text-align:center">{{ row['To Par'] }}</td>
+                    <td style="text-align:center">{{ row['To Par Int'] }}</td>
+                    <td style="text-align:center">{{ row['Today'] }}</td>
+                    <td style="text-align:center">{{ row['Today Int'] }}</td>
+                    <td style="text-align:center">{{ row['Thru'] }}</td>
+                    <td style="text-align:center">{{ row['R1'] }}</td>
+                    <td style="text-align:center">{{ row['R2'] }}</td>
+                    <td style="text-align:center">{{ row['R3'] }}</td>
+                    <td style="text-align:center">{{ row['R4'] }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+          </div>
+          <div class="col-md-4 fgl-chat" id="chat">
+          <h3 style="text-align:left;margin-left:35px">Live Chat</h3>
+            <div class="chat-section ">
+              <ul id="messages" class="w3-text-red"></ul>
+            </div>
+            <textarea id="myMessage" rows="4" style="width:85%;" class="chat-form"></textarea>
+            <button id="sendbutton" style="margin-top:15px; margin-left: 35px; text-align:right;">Send</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+  </body>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+  <script type="text/javascript">
+    const username = `{{ user }}`;
+  </script>
+  <script type="text/javascript">
+  $(document).ready(function() {
+
+  	// var socket = io.connect('http://127.0.0.1:5000');
+  	var socket = io('http://127.0.0.1:5000');
+  	socket.on('connect', function() {
+  		socket.send('<b>'+username+'</b>' +' has entered the chat!');
+  	});
+
+    socket.on('disconnect', function() {
+      socket.emit('<b>'+username+'</b>' +' has left the chat.');
+    });
+
+  	socket.on('message', function(msg) {
+  		$("#messages").append('<li>'+msg+'</li>');
+  		console.log('Received message from '+username);
+  	});
+
+  	$('#sendbutton').on('click', function() {
+  		socket.send('<b>'+'{{ user }}'+ '</b>' + ': ' + $('#myMessage').val());
+  		$('#myMessage').val('');
+  	});
+
+  });
+  </script>
+  <script type="text/javascript">
+  var input = document.getElementById("myMessage");
+
+  // Execute a function when the user releases a key on the keyboard
+  input.addEventListener("keyup", function(event) {
+  // Number 13 is the "Enter" key on the keyboard
+  if (event.keyCode === 13) {
+    // Cancel the default action, if needed
+    event.preventDefault();
+    // Trigger the button element with a click
+    document.getElementById("sendbutton").click();
+    }
+    });
+  </script>
+
+  <script type="text/javascript" src="{{url_for('static', filename='jquery-3.5.1.min.js') }}"></script>
+  <script src="//cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" charset="utf-8"></script>
+  <script src="//cdn.datatables.net/plug-ins/1.10.21/sorting/absolute.js" charset="utf-8"></script>
+  <script type="text/javascript">
+    $(document).ready( function () {
+      var namesType = $.fn.dataTable.absoluteOrder( [
+          { value: '', position: 'top' }
+        ] );
+
+        var numbersType = $.fn.dataTable.absoluteOrderNumber( [
+          { value: 'N/A', position: 'bottom' }
+        ] );
+
+        $('#data_table').DataTable( {
+          "paging": false,
+          "autoWidth": false,
+          "bInfo": false,
+          "bFilter":false,
+          "order": [[ 2, 'asc' ]],
+          columnDefs: [
+            {data: "Team", type:namesType, targets: 0 },
+            {data: "To Par", orderData: [2], type:numbersType, targets: 1 },
+            {data: "To Par Int", type:numbersType, visible:false, targets: 2 },
+            {data: "Today", type:namesType, orderData: [4], visible:false, targets: 3 },
+            {data: "Today Int", type:numbersType, targets: 4 },
+            {data: "Holes Remaining", type:numbersType, targets: 5 },
+            {data: "Cut Players", type:namesType, targets: 6 },
+            {data: "4th Score", type:namesType, targets: 7 }
+          ]
+        } );
+      } );
+
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready( function () {
+      var namesType = $.fn.dataTable.absoluteOrder( [
+          { value: '', position: 'top' }
+        ] );
+
+        var numbersType = $.fn.dataTable.absoluteOrderNumber( [
+          { value: 'N/A', position: 'bottom' }
+        ] );
+
+        $('#drafted').DataTable( {
+          "paging": false,
+          "bInfo": false,
+          "autoWidth": false,
+          "order": [[ 4, 'asc' ]],
+          columnDefs: [
+            {data: "POS", type:namesType, orderData:[4],targets: 0 },
+            {data: "Player", type:numbersType, targets: 1 },
+            {data: "Team", type:numbersType, targets: 2 },
+            {data: "To Par", type:namesType, orderData:[4],targets: 3 },
+            {data: "To Par Int", type:numbersType, targets: 4, visible:false },
+            {data: "Today", type:namesType, orderData:[6], targets: 5 },
+            {data: "Today Int", visible:false,targets: 6 },
+            {data: "Thru", type:namesType, targets: 0 },
+          ]
+        } );
+      } );
+
+  </script>
+
+
+  <script type="text/javascript">
+    $(document).ready( function () {
+      var namesType = $.fn.dataTable.absoluteOrder( [
+          { value: '', position: 'top' }
+        ] );
+
+        var numbersType = $.fn.dataTable.absoluteOrderNumber( [
+          { value: 'N/A', position: 'bottom' }
+        ] );
+
+        $('#scoreboard').DataTable( {
+          "paging": false,
+          "bInfo": false,
+          "autoWidth": false,
+          "order": [[ 3, 'asc' ]],
+          columnDefs: [
+            {data: "Player", type:namesType, targets: 0 },
+            {data: "POS", type:numbersType, targets: 1 },
+            {data: "To Par", type:namesType, orderData:[3],targets: 2 },
+            {data: "To Par Int", type:numbersType, targets: 3, visible:false },
+            {data: "Today", type:namesType, orderData:[5],targets: 4 },
+            {data: "Today Int", type:numbersType, visible:false, targets: 5 },
+            {data: "Thru", type:namesType, targets: 6 },
+          ]
+        } );
+      } );
+
+  </script>
+</html>

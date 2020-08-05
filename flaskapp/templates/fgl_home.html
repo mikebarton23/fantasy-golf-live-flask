@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='test.css') }}">
+  <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"> -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='fgl.css') }}">
+  <style>
+  body, h1,h2,h3,h4,h5,h6 {font-family: "Montserrat", sans-serif}
+  .w3-row-padding img {margin-bottom: 12px}
+  /* Set the width of the sidebar to 120px */
+  .w3-sidebar {width: 120px;background: #D3D3D3;}
+  /* Add a left margin to the "page content" that matches the width of the sidebar (120px) */
+  #main {margin-left: 120px}
+  </style>
+  <title>Fantasy Golf Live - Home</title>
+  <div class="left-home">
+    <nav class="fgl-sidebar w3-bar-block w3-small w3-hide-small w3-center fgl-icon">
+      <a href="{{ url_for('main.view') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+        <i class="fa fa-home w3-xxlarge"></i>
+        <p>Home</p>
+      </a>
+      <a href="{{ url_for('players.myteam') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+        <i class="fa fa-users w3-xxlarge"></i>
+        <p>My Team</p>
+      </a>
+      <a href="{{ url_for('players.game_scoreboard') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+        <i class="fa fa-list-ol w3-xxlarge"></i>
+        <p>Scoreboard</p>
+      </a>
+      <a href="{{ url_for('main.home') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+        <i class="fa fa-comments w3-xxlarge"></i>
+        <p>Smack Board</p>
+      </a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('players.myteam') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+          <i class="fa fa-users w3-xxlarge"></i>
+          <p>My Team</p>
+        </a>
+        <a href="{{ url_for('players.draft') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+          <i class="fa fa-plus-square-o w3-xxlarge"></i>
+          <p>Draft</p>
+        </a>
+        <a href="{{ url_for('users.account') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+          <i class="fa fa-cog w3-xxlarge"></i>
+          <p>My Account</p>
+        </a>
+        <a href="{{ url_for('users.logout') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+          <i class="fa fa-sign-out w3-xxlarge"></i>
+          <p>Logout</p>
+        </a>
+      {% else %}
+        <a href="{{ url_for('users.login') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+          <i class="fa fa-sign-in w3-xxlarge"></i>
+          <p>Sign In</p>
+        </a>
+        <a href="{{ url_for('users.register') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-red">
+          <i class="fa fa-user-plus w3-xxlarge"></i>
+          <p>Register</p>
+        </a>
+      {% endif %}
+    </nav>
+    <div class="w3-top w3-hide-large w3-hide-medium" id="myNavbar">
+      <div class="w3-bar w3-black w3-opacity w3-hover-opacity-off w3-center w3-small w3-hover-red">
+        <a href="{{ url_for('main.home') }}" class="w3-bar-item w3-button" style="width:25% !important">Home</a>
+        <a href="{{ url_for('players.myteam') }}" class="w3-bar-item w3-button" style="width:25% !important">My Team</a>
+        <a href="{{ url_for('players.game_scoreboard') }}" class="w3-bar-item w3-button" style="width:25% !important">Scoreboard</a>
+        <a href="{{ url_for('users.account') }}" class="w3-bar-item w3-button" style="width:25% !important">My Account</a>
+        <a href="{{ url_for('users.logout') }}" class="w3-bar-item w3-button" style="width:25% !important">Logout</a>
+      </div>
+    </div>
+  </div>
+  <body>
+    <div class="main-home">
+      <!-- Header/Home -->
+      <header class="w3-center">
+        <h2 class="w3-jumbo w3-text-red" style="color:#FB5B5B; margin-top:15px;"><span class="w3-hide-small">Welcome to</span> Fantasy Golf Live!</h2>
+        <img src="{{ url_for('static',filename='images/logo_transparent_cropped.png')}}" alt="collapse" class="w3-image" width="349" height="234">
+      </header>
+
+      <!-- About Section -->
+      <div class="w3-home-content w3-justify w3-text-grey" id="about">
+        <h2 class="w3-text-light-grey">Rules of the Game</h2>
+        <hr style="width:200px" class="w3-opacity">
+        <p style="color:#fff">Each week, you will select six golfers to compete on your team. Log in and draft your team by Wednesday night at 11:59 PM to be eligible to compete.
+          Once your team has been selected, the fun begins. Your team's score is calculated based on your best four players at any given time (i.e. if you have four players
+          that are playing well and two that aren't, only your top four count). But wait, there's more! If three (or more) of your players fail to make the cut, you will be eliminated from contention.
+          Draft your team today and enjoy the fun!
+        </p>
+        <br>
+        <!-- Grid for pricing tables -->
+        <h2 class="w3-text-light-grey">Features</h2>
+        <div class="w3-row-padding" style="margin:0 -16px">
+          <div class="w3-third w3-margin-bottom">
+            <ul class="w3-ul w3-white w3-center w3-opacity w3-hover-opacity-off">
+              <li class="w3-red w3-xlarge w3-padding-32">Account Benefits</li>
+              <li class="w3-padding-16">Team Stats</li>
+              <li class="w3-padding-16">Easy Access to View Roster</li>
+              <li class="w3-padding-16">Access to Smack Board</li>
+              <li class="w3-light-grey w3-padding-24">
+                <!-- <button type="button" class="w3-button w3-white w3-padding-large w3-hover-black" onclick="window.location.href= {{ url_for('users.register') }};">Sign Up</button> -->
+                <a class="w3-button w3-white w3-padding-large w3-hover-grey" href="{{ url_for('users.register') }}">Sign Up!</a>
+              </li>
+            </ul>
+          </div>
+          <div class="w3-third w3-margin-bottom">
+            <ul class="w3-ul w3-white w3-center w3-opacity w3-hover-opacity-off">
+              <li class="w3-red w3-xlarge w3-padding-32">Follow FGL on Twitter!</li>
+              <li class="w3-padding-16">Updates sent at end of each round</li>
+              <li class="w3-padding-16">Big changes in tour leaderboard</li>
+              <li class="w3-padding-16">Changes in FGL scoreboard</li>
+              <li class="w3-light-grey w3-padding-24">
+                <!-- <button type="button" class="w3-button w3-white w3-padding-large w3-hover-black" onclick="window.location.href= {{ url_for('users.register') }};">Sign Up</button> -->
+                <a class="w3-button w3-white w3-padding-large w3-hover-grey" href="https://twitter.com/FGL_Tracker">Follow Us!</a>
+              </li>
+            </ul>
+          </div>
+          <div class="w3-third w3-margin-bottom">
+            <ul class="w3-ul w3-white w3-center w3-opacity w3-hover-opacity-off">
+              <li class="w3-red w3-xlarge w3-padding-32">Coming Soon</li>
+              <li class="w3-padding-16">Live Chat - List of Users</li>
+              <li class="w3-padding-16">Scores by Hole</li>
+              <li class="w3-padding-16">Mobile-friendly Version</li>
+              <li class="w3-light-grey w3-padding-24">
+                <!-- <button type="button" class="w3-button w3-white w3-padding-large w3-hover-black" onclick="window.location.href= {{ url_for('users.register') }};">Sign Up</button> -->
+                <a class="w3-button w3-white w3-padding-large w3-hover-grey" href="https://forms.gle/npdkQ4opL7GJkchm9">Request an Update!</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <br>
+        <h2 class="w3-text-light-grey">Notes</h2>
+        <hr style="width:200px" class="w3-opacity">
+        <p style="color:#fff">This site is very much a work in progress. Bear with me while I work out the kinks and let me know if there's anything you'd like to see in the site using the link above.
+          As of right now, the page has only been formatted with desktop in mind. I'm working on a mobile version that should be out in a few weeks. Please let me know if you have any feedback. Thanks for visiting!
+        </p>
+        <p style="color:#fff">-Mike</p>
+        <br>
+        <br>
+    <!-- END PAGE CONTENT -->
+      </div>

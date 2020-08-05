@@ -1,0 +1,15 @@
+{% extends "fgl_layout.html" %}
+{% block content %}
+<style>
+  .image-section {
+    text-align: center;
+  }
+</style>
+  <div class="content-section">
+    <h1>You don't have permission to do that. (403)</h1>
+    <p>You have been forbidden from viewing this page. Run away, {{ current_user.username }}. Run away and never return.</p>
+  </div>
+  <div class="image-section">
+    <img src="{{ url_for('static', filename='images/403.jpg') }}" alt="Scar" style="width:500px;height:400px;">
+  </div>
+{% endblock content %}

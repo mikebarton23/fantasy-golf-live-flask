@@ -1,0 +1,68 @@
+{% extends "fgl_layout.html" %}
+{% block header %}Draft Your Team!{% endblock %}
+{% block content %}
+<div class="container w3-padding-small">
+    <h3 class="w3-text-red" style="margin-top:20px; margin-bottom:20px; text-align:center;">Draft Your Team!</h3>
+
+  <form action="{{ url_for('players.draft') }}" method="post">
+
+    <table id="data_table" class="table-striped table-bordered table-dark table-hover table-sm table-responsive" style="text-align_center">
+    <input type="submit" class = "draft-submit" value="Submit Picks!" style="float: right;">
+      <thead class="thead-dark" style="width:100%;">
+        <tr>
+          <th scope="col" style="width: auto;">Pick</th>
+          <th scope="col" style="width: 250px;">Player</th>
+          <th scope="col" style="width: 250px;">World Rank</th>
+          <th scope="col" style="width: 250px;">Odds</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i,row in df.iterrows() %}
+        <tr>
+          <td ">
+            <input type="checkbox" name="draftcheckbox" value="{{ row['Player'] }}">
+          </td>
+          <td style="text-align:center"><img src="{{ row['Image'] }}" alt="player_img" border=3 height=73.5 width=55></img><br>{{ row['Player'] }}</td>
+          <td style="text-align:center">{{ row['World Rank'] }}</td>
+          <td style="text-align:center">{{ row['Odds'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <br>
+    <br>
+
+  </form>
+</div>
+{% endblock %}
+
+{% block javascript %}
+
+<script type="text/javascript" src="{{url_for('static', filename='jquery-3.5.1.min.js') }}"></script>
+<script src="//cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" charset="utf-8"></script>
+<script src="//cdn.datatables.net/plug-ins/1.10.21/sorting/absolute.js" charset="utf-8"></script>
+<script type="text/javascript">
+  $(document).ready( function () {
+    var namesType = $.fn.dataTable.absoluteOrder( [
+        { value: '', position: 'top' }
+      ] );
+
+      var numbersType = $.fn.dataTable.absoluteOrderNumber( [
+        { value: 'N/A', position: 'bottom' }
+      ] );
+
+      $('#data_table').DataTable( {
+        "paging": false,
+        "order": [[ 2, 'asc' ]],
+        columnDefs: [
+          {data: "Pick", type:namesType, targets: 0 },
+          {data: "Player", type:namesType, targets: 0 },
+          {data: "World Rank", type:numbersType, targets: 0 },
+          {data: "Odds", type:numbersType, targets: 0 }
+        ]
+      } );
+    } );
+
+</script>
+{% endblock %}

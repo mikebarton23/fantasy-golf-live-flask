@@ -1,0 +1,15 @@
+{% extends "fgl_layout.html" %}
+{% block content %}
+<style>
+  .image-section {
+    text-align: center;
+  }
+</style>
+  <div class="content-section">
+    <h1>Aw, jeez. Something went wrong. (403)</h1>
+    <p>We're experiencing some trouble on our end. Please try again in a couple minutes. Contact Mike if errors continue.</p>
+  </div>
+  <div class="image-section">
+    <img src="{{ url_for('static', filename='images/500.gif') }}" alt="Shrug" style="width:480px;height:270px;">
+  </div>
+{% endblock content %}
