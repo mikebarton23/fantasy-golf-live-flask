@@ -260,6 +260,19 @@ a:hover{
   width: 65px;
   margin-right: 16px;
 }
+
+.scoreboard-img {
+  height: 90px;
+  width: 90px;
+  margin-right: 4px;
+  margin-left:4px;
+}
+.team-img {
+  height: 130px;
+  width: 130px;
+  margin-right: auto;
+  margin-left:auto;
+}
 .post-section {
   background:  #d3d3d3;
   padding: 10px 10px;
@@ -284,11 +297,23 @@ a:hover{
 .fgl-scoreboard{
   max-width: 66.666667%;
   margin-left: auto; margin-right: auto;
+  display: inline-block;
   table-layout: fixed;
   overflow-x: auto;
   overflow-y:auto;
   font-size: 1vw;
   font-size: max(1vw, 12px);}
+
+.team-scoreboard{
+  max-width: 100%;
+  margin-left: auto; margin-right: auto;
+  display: inline-block;
+  overflow-x: auto;
+  overflow-y:auto;
+  font-size: 1vw;
+  font-size: max(1vw, 12px);
+  float:left;}
+
 
 .fgl-chat{width: 33.333333%}
 
